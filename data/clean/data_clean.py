@@ -106,6 +106,9 @@ class DataDeal():
         plt.savefig("../../datapicture/不同年龄死亡生存比例.png")
         plt.show()
 
+    def dataClean(self):
+        print("========数据清洗=======")
+
 
 if __name__ == '__main__':
     dataDeal = DataDeal()
