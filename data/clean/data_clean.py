@@ -163,6 +163,18 @@ class DataDeal():
                                      'Embarked', 'family'])
         save.to_csv('../../dataset/data_clean.csv')
 
+    # 深度学习数据集清洗
+    def trainData(self):
+        self.data_clean['Embarked'].fillna(self.data_clean['Embarked'].mode()[0], inplace=True)
+        self.data_clean['Age'].fillna(self.data_clean['Age'].mean(), inplace=True)
+        self.data_clean['Sex'].replace('male', '1', inplace=True)
+        self.data_clean['Sex'].replace('female', '0', inplace=True)
+
+        save = pd.DataFrame(self.data_clean,
+                            columns=['PassengerId', 'Survived', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp',
+                                     'Parch', 'Ticket', 'Fare', 'Embarked'])
+        save.to_csv('../../dataset/data_train.csv')
+
 
 if __name__ == '__main__':
     dataDeal = DataDeal()
@@ -174,4 +186,5 @@ if __name__ == '__main__':
     # dataDeal.completion2()
     # dataDeal.mergeParchSibSp()
     # dataDeal.dropNameId()
-    dataDeal.changeSex()
+    # dataDeal.changeSex()
+    dataDeal.trainData()
