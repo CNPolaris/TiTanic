@@ -26,6 +26,7 @@ class DataDeal():
         self.data_clean = self.df_train.copy(deep=True)
         plt.rcParams['font.sans-serif'] = ['SimHei']
         sns.set(font='SimHei', style='whitegrid', context='talk')
+        self.clean_data = pd.read_csv('../../dataset/data_clean.csv')
 
     def dataPrint(self):
         print(self.df_train.head())
@@ -40,14 +41,6 @@ class DataDeal():
         y = y[y.notnull()]  # 剔除空值
         return lagrange(y.index, list(y))(n)  # 插值并返回插值结果
 
-    # 数据填充
-    def completion(self):
-        for column in self.data_clean.columns:
-            for i in range(len(self.data_clean)):
-                if (self.data_clean[column].isnull())[i]:
-                    self.data_clean[column][i] = self.ployinterp_column(self.data_clean[column], i)
-        print(self.data_clean.isnull().sum())
-
     def dataExam(self):
         fig = plt.figure(figsize=(12, 7))
         ax = fig.add_subplot(1, 1, 1)
@@ -57,7 +50,6 @@ class DataDeal():
         print(data)
         plt.savefig("../../datapicture/surviedabouttotal.png")
         plt.show()
-
 
     def viveData(self):
         # print("==========查看形状==========")
@@ -101,18 +93,85 @@ class DataDeal():
         death = self.df_train[self.df_train['Survived'] == 0]
 
         sns.distplot(survived['Age'], bins=40, kde=False)
-        sns.distplot(death['Age'], bins=40, kde=False,color='red')
+        sns.distplot(death['Age'], bins=40, kde=False, color='red')
         plt.title("不同年龄死亡生存比例")
         plt.savefig("../../datapicture/不同年龄死亡生存比例.png")
         plt.show()
 
-    def dataClean(self):
-        print("========数据清洗=======")
+    # 保存数据
+    def dataSave(self):
+        save = pd.DataFrame(self.clean_data,
+                            columns=['PassengerId', 'Survived', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp',
+                                     'Parch', 'Ticket', 'Fare', 'Embarked'])
+        save.to_csv('../../dataset/data_clean.csv')
+
+    # 数据清洗
+    # 删除缺失值比例超过60%的列
+    def dataClean1(self):
+        print(self.data_clean.isnull().sum())
+        for column in self.data_clean.columns:
+            miss = self.data_clean[column].isnull().sum(axis=0) / self.data_clean.shape[0]
+            if miss > 0.6:
+                self.data_clean.drop(column, axis=1, inplace=True)
+        # print(self.data_clean.describe())
+        print(self.data_clean.isnull().sum())
+        print(self.data_clean.columns)
+        self.dataSave()
+
+    # 数据填充
+    def completion1(self):
+        # 填充Embarked
+        # print(self.data_clean['Embarked'].isnull().sum())
+        # # 考虑到众数可能不止一个， 所以取第一个
+        self.clean_data['Embarked'].fillna(self.clean_data['Embarked'].mode()[0], inplace=True)
+        print(self.clean_data['Embarked'].isnull().sum())
+        print(self.clean_data.isnull().sum())
+        self.dataSave()
+
+    def completion2(self):
+        # 填充Age
+        self.clean_data['Age'].fillna(self.clean_data['Age'].mean(), inplace=True)
+        print(self.clean_data.isnull().sum())
+        self.dataSave()
+
+        # 拉格朗日填充法
+
+    #  合并Parch和SibSp
+    def mergeParchSibSp(self):
+        self.clean_data['family'] = self.clean_data['Parch'] + self.clean_data['SibSp']
+        save = pd.DataFrame(self.clean_data,
+                            columns=['PassengerId', 'Survived', 'Pclass', 'Name', 'Sex', 'Age', 'Ticket', 'Fare',
+                                     'Embarked', 'family'])
+        save.to_csv('../../dataset/data_clean.csv')
+        print(self.clean_data.info())
+
+    # 删除name Id
+    def dropNameId(self):
+        self.clean_data.drop(['Name', 'PassengerId'], axis=1, inplace=True)
+        save = pd.DataFrame(self.clean_data,
+                            columns=['Survived', 'Pclass', 'Sex', 'Age', 'Ticket', 'Fare',
+                                     'Embarked', 'family'])
+        save.to_csv('../../dataset/data_clean.csv')
+
+    # 更换性别表达式
+    def changeSex(self):
+        self.clean_data['Sex'].replace('male', '1', inplace=True)
+        self.clean_data['Sex'].replace('female', '0', inplace=True)
+        # print(self.clean_data['Sex'])
+        save = pd.DataFrame(self.clean_data,
+                            columns=['Survived', 'Pclass', 'Sex', 'Age', 'Ticket', 'Fare',
+                                     'Embarked', 'family'])
+        save.to_csv('../../dataset/data_clean.csv')
 
 
 if __name__ == '__main__':
     dataDeal = DataDeal()
     # dataDeal.dataPrint()
     # dataDeal.dataExam()
-    # dataDeal.completion()
-    dataDeal.viveData()
+    # dataDeal.viveData()
+    # dataDeal.dataClean1()
+    # dataDeal.completion1()
+    # dataDeal.completion2()
+    # dataDeal.mergeParchSibSp()
+    # dataDeal.dropNameId()
+    dataDeal.changeSex()
