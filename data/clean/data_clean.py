@@ -27,6 +27,7 @@ class DataDeal():
         plt.rcParams['font.sans-serif'] = ['SimHei']
         sns.set(font='SimHei', style='whitegrid', context='talk')
         self.clean_data = pd.read_csv('../../dataset/data_clean.csv')
+        mpl.rcParams['axes.unicode_minus'] = False
 
     def dataPrint(self):
         print(self.df_train.head())
@@ -98,6 +99,19 @@ class DataDeal():
         plt.savefig("../../datapicture/不同年龄死亡生存比例.png")
         plt.show()
 
+    # 相关图
+    def correllogram(self):
+        features = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
+        train_features = self.data_clean[features]
+        # print(train_features.info())
+        sns.heatmap(train_features.corr(), xticklabels=train_features.corr().columns,
+                    yticklabels=train_features.corr().columns,
+                    cmap='RdYlGn', center=0, annot=True)
+        plt.yticks(fontsize=12)
+        plt.xticks(fontsize=12)
+        plt.title('Titanic数据相关图')
+        plt.savefig('../../datapicture/Titanic数据相关图.png')
+        plt.show()
     # 保存数据
     def dataSave(self):
         save = pd.DataFrame(self.clean_data,
@@ -187,4 +201,5 @@ if __name__ == '__main__':
     # dataDeal.mergeParchSibSp()
     # dataDeal.dropNameId()
     # dataDeal.changeSex()
-    dataDeal.trainData()
+    # dataDeal.trainData()
+    dataDeal.correllogram()
