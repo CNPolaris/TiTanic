@@ -27,7 +27,7 @@ def __init__(self):
         mpl.rcParams['axes.unicode_minus'] = False
 ```
 
-**注意：**为了避免通过`matplotlib`或`seaborn`做图时，部分字体无法显示，可通过设置字体进行解决，即
+**注意**：为了避免通过`matplotlib`或`seaborn`做图时，部分字体无法显示，可通过设置字体进行解决，即
 
 ```python
 plt.rcParams['font.sans-serif'] = ['SimHei']
