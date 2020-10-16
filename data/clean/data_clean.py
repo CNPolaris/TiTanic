@@ -112,6 +112,7 @@ class DataDeal():
         plt.title('Titanic数据相关图')
         plt.savefig('../../datapicture/Titanic数据相关图.png')
         plt.show()
+
     # 保存数据
     def dataSave(self):
         save = pd.DataFrame(self.clean_data,
@@ -119,7 +120,9 @@ class DataDeal():
                                      'Parch', 'Ticket', 'Fare', 'Embarked'])
         save.to_csv('../../dataset/data_clean.csv')
 
-    # 数据清洗
+    """    
+    数据清洗
+    """
     # 删除缺失值比例超过60%的列
     def dataClean1(self):
         print(self.data_clean.isnull().sum())
@@ -136,7 +139,7 @@ class DataDeal():
     def completion1(self):
         # 填充Embarked
         # print(self.data_clean['Embarked'].isnull().sum())
-        # # 考虑到众数可能不止一个， 所以取第一个
+        # 考虑到众数可能不止一个， 所以取第一个
         self.clean_data['Embarked'].fillna(self.clean_data['Embarked'].mode()[0], inplace=True)
         print(self.clean_data['Embarked'].isnull().sum())
         print(self.clean_data.isnull().sum())
